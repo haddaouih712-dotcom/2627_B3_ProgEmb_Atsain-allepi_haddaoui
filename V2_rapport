@@ -1,0 +1,226 @@
+Suivi de rapport programmation embarquée
+
+
+
+Questions 1 : Notez le hostname et le nom d'utilisateur choisis. Pourquoi est-il nécessaire de définir ces informations avant le premier démarrage d'une Raspberry Pi utilisée sans écran ?
+
+Notre hostname est : C106-MH-WA
+Notre identifiant est : userwm.
+MDP : 1234@
+
+Définir ces informations permet de configurer la carte SD. En configurant la carte SD, on donne un identifiant et un mot de passe pour s’identifier. Ce qui permet de ne pas laisser n’importe qui se connecter surtout quand plusieurs Raspberry sont connectés. D'ailleurs en configurant, on pourra connecter le Raspberry à un appareil via le même Wifi que notre ordinateur. Ce qui permettra de connecter via SSH ou UART plus facilement à notre ordinateur et notre Raspberry.
+
+Question 2 : Expliquez pourquoi TX est relié à RX et RX à TX. 
+
+Dans notre cas on a une communication série asynchrone par 2 appareils (Le pcb et la Raspberry) . Les deux appareils un moment devront échanger des données.  Lorsqu'un appareil envoie un signal en même temps et que TX est relié avec RX et RX à TX, cela évite que des signaux entrent en conflit. Ce qui évite la perte de données. On est sûr de l’avoir bien reçue. TX (transmit) correspond en effet au transmetteur et RX(receive) au récepteur.
+TX relié à RX et RX à TX permet une communication entre les émetteurs TX et récepteur RX. Ce qu’on appelle full-duplex.
+
+
+Le second appareil va devoir envoyer un signal pour confirmer la réception du signal du premier appareil. 
+
+Question 3 : Expliquez le rôle de GND dans cette liaison. 
+
+Le GND est la masse du circuit, la référence applicable pour tous les signaux. Il ferme le circuit électrique par un retour du courant. Il permet de conserver la stabilité et le bon fonctionnement du circuit électrique.
+Les signaux UART ont besoin du GND pour être bien interprétés par les cartes électroniques.
+
+Question 4 : Que signifie le réglage 115200 8N1 ? 
+
+Le réglage 115200 8N1 est appelé BAUD rate. Il correspond à la vitesse de transmission en bits par seconde.
+
+Le 8 signifie que les données sont découpées en groupes de 8 morceaux (par paquet de 8 bits)
+Le N signifie qu'il n'y a pas de vérification pour savoir si l'information a été déformée . 
+Le 1 sert à indiquer la fin de la transmission d'un caractère. Cela est très souvent utilisé pour l’UART.
+
+Baud est une unité de mesure pour quantifier l'envoi de données sous des bits soit des 0 ou des 1.
+
+Question 5 : Pourquoi ne faut-il pas connecter la broche 5 V de l'adaptateur aux GPIO de la Raspberry Pi ?
+Il ne faut pas connecter la broche 5 V de l'adaptateur aux GPIO de la Raspberry Pi car cela risque d’endommager la Raspberry Pi , il ne peut pas supporter 5V. Il peut supporter au maximum 3,3 V.
+
+Question 6 : Que se passe-t-il si le terminal série est configuré à une autre vitesse que la Raspberry Pi ?
+
+Lorsqu'on envoie des instructions de la Raspberry PI au PCB la communication ne va pas se faire et les données peuvent être corrompues.
+
+Question 7 : Dessinez un schéma de câblage représentant le shield utilisé. Comparez la connexion UART et la connexion SSH : quels équipements et quelles configurations sont nécessaires dans chaque cas ? Donnez un avantage et une limite à chaque méthode. 
+
+
+Notez l'adresse IP obtenue. Avez-vous accès à internet ? 
+Pour l'instant on n'a pas accès à internet.
+
+Pourquoi la commande sudo fonctionne ici ?
+
+La commande Sudo marche sur la Raspberry parce qu'on est un super utilisateur (un utilisateur qui a tous les droits) sur la Raspberry.
+
+Avant la connexion avec la Raspberry 
+Lorsqu'on envoie une commande, la commande atteint uniquement la zone accessible par défaut mais n'atteint pas les autres même si la commande sudo existe. C'est à ce moment-là que tu trouves comme réponse une “commande introuvable ou ‘permission denied”.
+
+Avant la connexion avec la raspberry notre terminal pouvait exécuter des commandes pour notre ordinateur Linux. Le moment où on s'est connecté les commandes suivantes s'envoyaient à notre Raspberry dans laquelle on est le super utilisateur. On remarque que le terminal envoie des commandes à partir du moment où on observe myuser@myhost~   avant l'endroit où on commence à écrire.
+
+
+Si cela ne s’affiche pas alors un programme est en train de tourner, on appuie sur CTRL+C.
+Sinon on appuie sur entrée pour réactualiser.
+
+
+Si tu veux envoyer une commande à ta Raspberry, est ce que tout à gauche souvent dans une autre couleur
+Si oui tu est bien connecté 
+Sinon, tu n'es pas sur le bon terminal, il faut alors vérifier ta connexion avec ta Raspberry (voir partie précédente intitulée “Se connecter avec la Raspberry”).
+
+
+
+
+Explication du mot magique 
+Il y a plusieurs zones (3 actuellement identifié avec des droits d'accès différents
+super utilisateur(t’as tous les droits de l’ordinateur). 
+éditeur de texte 
+Zone accessible par défaut 
+
+
+
+C'est pourquoi, il faut identifier quelle zone ta commande appartient : 
+
+Si tu veux modifier les fichiers de la Raspberry, il faudra alors atteindre la zone d'éditeur de texte. 
+C’est pourquoi, juste avant ta commande t'écris :
+Nano
+
+Et si tu veux modifier des paramètres de ton profil tels que modifier le mot de passe. Il faudra atteindre la zone du super utilisateur.
+C’est pourquoi, juste avant ta commande t'écris :
+Sudo
+
+
+
+
+Où se trouve la clé privée ? Où se trouve la clé publique ? Pourquoi la clé privée ne doit-elle pas être copiée dans ~/.ssh/authorized_keys ? Quel est le rôle de authorized_keys ? Quelle différence faites-vous entre le mot de passe du compte Raspberry Pi et la phrase secrète de la clé privée ? Pourquoi faut-il tester une nouvelle connexion avant de désactiver l'authentification par mot de passe ? Quels droits doivent avoir les dossiers et fichiers .ssh pour limiter les risques ?
+
+La connexion UART qui permet une connexion physique est limitée par la distance physique des câbles qui ne peut pas dépasser quelques mètres pour ne pas perdre le signal. 
+La connexion SSH qui permet une connexion en réseaux est donc totalement dépendante du réseau informatique. Si le Wi-Fi ou le routeur tombe en panne, le réseau est inutilisable. Le SSH est désactivé par défaut donc on doit toujours l'activer manuellement avant la toute première utilisation. 
+
+Pour l'UART, les équipements nécessaires sont la Raspberry Pi zéro 2W, une carte microSD configurée, un adaptateur UART-USB 3,3V et un terminal série minicom.
+
+Les limites de l’UART
+Ses avantage 
+
+Tandis que pour le SSH, les équipements nécessaires sont une 
+
+PouLes limites sont 
+
+ 
+
+On a suivi les étapes pour configurer notre carte SD, on a choisi le bon modèle, le bon modèle d’exploitation et on a écrit sur la carte SD les instructions. On a ensuite choisi notre hostname ainsi que notre identifiant et notre mot de passe. Ensuite on a suivi les instructions en mettant les codes dans le fichier config.txt. On a ensuite utilisé un adaptateur UART - USB de 3,3 V pour connecter la Raspberry Pi Zero W au PC. 
+
+
+On est désormais bloqué à la connexion login. 
+
+
+
+
+Séance 2 : 
+
+8h à 9h 
+On a branché le câble USB avec l'adaptateur USB-UART et notre PC. On s’est renseigner sur le datasheet de la pi zéro 2W pour mieux comprendre 
+
+On a identifié le modèle de la raspberry pour voir ses pins. Puis on a identifié les pins contenant UART TX ET UART RX et des GPIO, l'alimentation 5V/3,3V et le GND.
+
+
+Datasheet de la Raspberry Pi zéro 2 W
+
+
+
+On a vérifié qu'on a mis les bons fichiers On s'est assuré de bien remplacer user par notre utilisateur. Une fois avoir accédé au terminal et lancez la commande min 
+
+On a avait toujours le message login incorrect. 
+
+
+Comme initiative, on est retourné aux étapes précédentes : la réécriture de ma carte microSD.
+On a suivi encore une fois les étapes de réécriture de la carte en faisant attention de bien noter le login, hostname et mot de passe. On a appelé le professeur pour qu'il confirme la réécriture.
+
+9h à 10h 
+On a fait plusieurs tests pour bien instaurer les fichiers user et conf. 
+On a essayé de remettre les fichiers user conf et conf en changeant la clé. Puis on a essayé de changer de remettre notre utilisateur par monuser. On a essayé cette fois-ci de déplacer les fichiers “conf.txt” et “userconf.txt” sur l'ordinateur de la salle et non sur nos ordinateurs. Ceux-là ne marchaient toujours pas. 
+Initiatives
+On a demandé à un camarade et on a testé à partir d'une autre clé USB pour visualiser l'utilisateur.
+
+On a compris qu'on devait revenir à l'étape du début et essayer de réécrire la carte micro SD avec un utilisateur et mot de passe différent. 
+10h-11h
+Le login est toujours incorrect. On a réécrit la carte microSD. Cette fois-ci on a suivi les étapes attentivement pour ensuite arriver à la confirmation du login pour confirmer notre écriture sur la carte. On attend le prof et en attendant on poursuit la compréhension et le développement des questions.
+On a essayé d'utiliser un identifiant et un mot de passe plus simple et le login était toujours incorrect et ne marchait pas.
+
+On a émis comme hypothèse que c'était un problème de clavier d'après l'IA.
+On a essayé de changer les lettres pour adapter au clavier d'une autre langue possible et on a toujours login incorrect.
+
+Après la demande d'aide d'un camarade qui a réussi, on a compris que le login provenait du téléchargement de minicom.
+
+Quand on a réessayé encore de lancer la commande Sudo apt update par exemple, un message d'erreur d'affichage dans le terminal 
+
+
+“sudo : I'm sorry, student. I'm afraid I can't do that” 
+
+
+
+On a compris qu'il fallait suivre à la lettre chaque étape dont l'étape du téléchargement de minicom.
+
+séance 3 : on a essayé de reflasher la carte et de revoir chaque ligne du tutoriel sur moodle.
+
+
+après avoir exécuté la commande pour télécharger “minicom” avec comme erreur sudo : I'm sorry, student. I'm afraid  I can't do that”, on a compris après avoir demandé au professeur que minicom était déjà téléchargé. On croyait que le problème venait d’ici. On a ensuite poursuivi les recherches.
+
+
+On a réessayé plusieurs fois de mettre le bon fichier pour ‘userconf.txt” et “conf.txt” mais cela ne marchait pas.
+
+On a alors décidé de revenir tout au début et de réécrire la carte On a compris que le problème était le wifi. On avait choisi la wifi de eduroam et non la wifi de la salle. Ce qui explique pourquoi on a avait “login incorrect".
+
+
+En continuant les exécutions de commandes pour configurer la wifi, on a rencontré un autre problème. On n'arrivait pas à trouver l'adresse IP de la Raspberry après l'exécution de la commande “ip a”. 
+
+
+L'adresse IP est 10.10.3.255 de la ligne inet 10.10.2.186/23 brd 10.10.3.255 scope global noprefixroute wlan0.
+
+
+Après des recherches de l'adresse IP, on a appris que l'interface WI-FI (wlan0) ne semble pas connectée au réseau de la salle. Ce qui explique pourquoi l'adresse IP de notre raspberry ne s'était pas affichée après avoir exécuté la commande “ip a”. On a essayé de relancer la raspberry par la commande “sudo reboot”.
+
+On a refait la même manipulation.
+Le problème était peut-être un manque d'adresse IP dans le WIFI. C'est peut être pour cela qu'on n'arrive pas à se connecter.
+
+Attendant que le professeur essaye de résoudre, on a essayé d’installer un firmware pour mettre à jour les pilotes wifi et cela n’a pas fonctionné.
+
+
+Pour résoudre ce problème 
+
+Nmcli est le logiciel network manager cli 
+
+
+,  il fallait faire sudo nmcli Device wifi list
+
+
+Pas de limite pour le rapport, rapport avec <détails> balises de htmk pour répondre aux questions le plus synthtiquement possible puis faire des liens pour expliquer davantage en profondeur 
+
+Après avoir fait ip a avecle problème résolu par le professeur 
+On a :
+
+
+“userwm@C106-MH-WA:~$ ip a
+1: lo: <LOOPBACK,UP,LOWER_UP> mtu 65536 qdisc noqueue state UNKNOWN group default qlen 1000
+    link/loopback 00:00:00:00:00:00 brd 00:00:00:00:00:00
+    inet 127.0.0.1/8 scope host lo
+       valid_lft forever preferred_lft forever
+    inet6 ::1/128 scope host noprefixroute 
+       valid_lft forever preferred_lft forever
+2: wlan0: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1500 qdisc fq_codel state UP group default qlen 1000
+    link/ether 2c:cf:67:9d:2a:34 brd ff:ff:ff:ff:ff:ff
+    inet 10.10.2.186/23 brd 10.10.3.255 scope global noprefixroute wlan0
+       valid_lft forever preferred_lft forever
+    inet6 fe80::2ecf:67ff:fe9d:2a34/64 scope link proto kernel_ll 
+       valid_lft forever preferred_lft forever
+userwm@C106-MH-WA:~$ “.
+
+
+On a exécuté la commande “ssh userwm@C106-MH-WA.local” et le terminal a affiché le message   “Connection refused”.
+
+On a essayé cette fois-ci de mettre l'adresse IP à la place de ‘notre_nom_de_hôte.local@adresseip”
+ 
+
+
+La bibliothèque Bus2 permet de faire une communication I2C 
+
+
+Schéma I2C demandé
+Comprendre pourquoi on configuré l'adresse IP
+
