@@ -1,3 +1,14 @@
+Les nouveaux documents seront pour le moment dans la partie wiki de notre github. On ajoutera ultérieurement les photos et screenshot sur github.
+
+
+
+
+
+
+
+
+
+
 Rapport programmation embarquée
 
 
